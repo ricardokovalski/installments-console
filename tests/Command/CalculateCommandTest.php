@@ -4,20 +4,27 @@ namespace RicardoKovalski\Installments\Console\Tests\Command;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
+use RicardoKovalski\Installments\Console\Application;
 use RicardoKovalski\Installments\Console\Command\CalculateCommand;
 use RicardoKovalski\Installments\Console\Tests\Util\TestOutput;
+use RicardoKovalski\Installments\Console\Util\BufferedOutput;
 use Symfony\Component\Console\Input\StringInput;
 
 class CalculateCommandTest extends TestCase
 {
     protected $execute;
 
+    protected $calculate;
+
     protected function setUp()
     {
         parent::setUp();
 
-        $this->execute = new \ReflectionMethod('RicardoKovalski\\Interest\\Console\\Command\\CalculateCommand', 'execute');
+        $this->execute = new \ReflectionMethod('RicardoKovalski\\Installments\\Console\\Command\\CalculateCommand', 'execute');
         $this->execute->setAccessible(true);
+
+        $this->calculate = new CalculateCommand();
+        $this->calculate->setApplication(new Application());
     }
 
     public function testConfigure()
@@ -25,10 +32,59 @@ class CalculateCommandTest extends TestCase
         $command = new CalculateCommand();
 
         $this->assertEquals('calculate', $command->getName());
-        $this->assertEquals('Calculate a interest', $command->getDescription());
+        $this->assertEquals('Calculate installments', $command->getDescription());
     }
 
-    public function testExpectedExceptionWhenCommandFirstArgumentIsEmpty()
+    public function testCommandWithoutOptionCalculationConfig()
+    {
+        $command = new CalculateCommand();
+
+        $expected = file_get_contents('tests/mocks/testCommandWithoutOptionCalculationConfig.txt');
+
+        $stringCommand = '343.90
+            --typeInterest=Financial
+            --interestValue=2.99
+            --limitValueInstallment=10.09';
+
+        $input = new StringInput($stringCommand);
+
+        $input->bind($command->getDefinition());
+
+        $output = new BufferedOutput();
+
+        $this->execute->invoke($this->calculate, $input, $output);
+
+        $this->assertEquals($expected, $output->fetch());
+    }
+
+    public function testCommandWithOptionCalculationConfig()
+    {
+        $command = new CalculateCommand();
+
+        $expected = file_get_contents('tests/mocks/testCommandWithOptionCalculationConfig.txt');
+
+        $stringCommand = '343.90
+            --typeInterest=Financial
+            --interestValue=2.99
+            --limitValueInstallment=10.09
+            --monetaryFormatterConfig
+            --currencyIsoCodes=usd
+            --locale=en_us
+            --fractionDigits=3
+            --monetaryFormatter=IntlCurrency';
+
+        $input = new StringInput($stringCommand);
+
+        $input->bind($command->getDefinition());
+
+        $output = new BufferedOutput();
+
+        $this->execute->invoke($this->calculate, $input, $output);
+
+        $this->assertEquals($expected, $output->fetch());
+    }
+
+    /*public function testExpectedExceptionWhenCommandFirstArgumentIsEmpty()
     {
         $command = new CalculateCommand();
 
@@ -41,9 +97,9 @@ class CalculateCommandTest extends TestCase
         $this->expectException(Exception::class);
 
         $this->execute->invoke($command, $input, $output);
-    }
+    }*/
 
-    public function testExpectedExceptionWhenCommandFirstArgumentIsInvalid()
+    /*public function testExpectedExceptionWhenCommandFirstArgumentIsInvalid()
     {
         $command = new CalculateCommand();
 
@@ -56,9 +112,9 @@ class CalculateCommandTest extends TestCase
         $this->expectException(Exception::class);
 
         $this->execute->invoke($command, $input, $output);
-    }
+    }*/
 
-    public function testCommandFirstArgumentIsFinancial()
+    /*public function testCommandFirstArgumentIsFinancial()
     {
         $command = new CalculateCommand();
 
@@ -71,9 +127,9 @@ class CalculateCommandTest extends TestCase
         $this->execute->invoke($command, $input, $output);
         $this->assertCount(1, $output->messages);
         $this->assertEquals(0, $output->messages[0]);
-    }
+    }*/
 
-    public function testCommandSecondArgumentCompleted()
+    /*public function testCommandSecondArgumentCompleted()
     {
         $command = new CalculateCommand();
 
@@ -86,9 +142,9 @@ class CalculateCommandTest extends TestCase
         $this->execute->invoke($command, $input, $output);
         $this->assertCount(1, $output->messages);
         $this->assertEquals(0, $output->messages[0]);
-    }
+    }*/
 
-    public function testCommandThirdArgumentCompleted()
+    /*public function testCommandThirdArgumentCompleted()
     {
         $command = new CalculateCommand();
 
@@ -101,9 +157,9 @@ class CalculateCommandTest extends TestCase
         $this->execute->invoke($command, $input, $output);
         $this->assertCount(1, $output->messages);
         $this->assertEquals(350.9, $output->messages[0]);
-    }
+    }*/
 
-    public function testCommandFourteenArgumentCompleted()
+    /*public function testCommandFourteenArgumentCompleted()
     {
         $command = new CalculateCommand();
 
@@ -116,30 +172,5 @@ class CalculateCommandTest extends TestCase
         $this->execute->invoke($command, $input, $output);
         $this->assertCount(1, $output->messages);
         $this->assertEquals(366.71513681364, $output->messages[0]);
-    }
-
-    public function testCommandOptionReverse()
-    {
-        $command = new CalculateCommand();
-
-        $input = new StringInput('Financial 2.99 350.90 2 -r');
-
-        $input->bind($command->getDefinition());
-
-        $output = new TestOutput();
-
-        $this->execute->invoke($command, $input, $output);
-        $this->assertCount(1, $output->messages);
-        $this->assertEquals(15.133085468258, $output->messages[0]);
-
-        $input = new StringInput('Financial 1.99 250.68 4 --reverse');
-
-        $input->bind($command->getDefinition());
-
-        $output = new TestOutput();
-
-        $this->execute->invoke($command, $input, $output);
-        $this->assertCount(1, $output->messages);
-        $this->assertEquals(11.99172236334, $output->messages[0]);
-    }
+    }*/
 }
