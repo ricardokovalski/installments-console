@@ -8,8 +8,10 @@ use RicardoKovalski\InstallmentsCalculator\Adapters\InterestCalculation;
 use RicardoKovalski\InstallmentsCalculator\Adapters\MonetaryFormatter;
 use RicardoKovalski\InstallmentsCalculator\Adapters\MonetaryFormatterConfig;
 use RicardoKovalski\InstallmentsCalculator\Enums\IsoCodes;
+use RicardoKovalski\InstallmentsCalculator\Enums\Patterns;
 use RicardoKovalski\InstallmentsCalculator\InstallmentCalculation;
 use RicardoKovalski\InstallmentsCalculator\InstallmentCalculationConfig;
+use RicardoKovalski\InstallmentsCalculator\InstallmentFormatter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -60,7 +62,8 @@ final class CalculateCommand extends Command
                 'limitInstallments',
                 'li',
                 InputOption::VALUE_OPTIONAL,
-                'Use this option to disable the installment limit. The default value is true (active). Boolean supported type.'
+                'Use this option to disable the installment limit. The default value is true (active). Boolean supported type.',
+                true
             )
             ->addOption(
                 'monetaryFormatterConfig',
@@ -131,6 +134,15 @@ final class CalculateCommand extends Command
             return;
         }
 
+        if (((bool) $input->getOption('installmentFormatter')) === true) {
+            $installmentOutput
+                ->makeInstallmentFormatter($this->buildInstallmentFormatter($input))
+                ->write($table, $installmentCalculation->getCollection());
+
+            $table->render();
+            return;
+        }
+
         $installmentOutput
             ->makeMonetaryFormatter($this->buildMonetaryFormatter($input))
             ->write($table, $installmentCalculation->getCollection());
@@ -196,6 +208,42 @@ final class CalculateCommand extends Command
         $methodFormatter = "to{$methodFormatter}";
 
         return MonetaryFormatter::$methodFormatter($this->buildMonetaryFormatterConfig($input));
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function buildInstallmentFormatter(InputInterface $input)
+    {
+        $installmentFormatter = new InstallmentFormatter($this->buildMonetaryFormatter($input));
+
+        $pattern = $input->getOption('pattern');
+
+        if (! $pattern) {
+            return $installmentFormatter;
+        }
+
+        $this->checkPattern($pattern);
+
+        $installmentFormatter->resetPattern(Patterns::PATTERN_B);
+
+        return $installmentFormatter;
+    }
+
+    /**
+     * @param $pattern
+     * @throws Exception
+     */
+    protected function checkPattern($pattern)
+    {
+        $patterns = [
+            'pattern_a',
+            'pattern_b',
+        ];
+
+        if (! in_array($pattern, $patterns)) {
+            throw new Exception('Invalid pattern. Supported "pattern_a" and "pattern_b".');
+        }
     }
 
     /**

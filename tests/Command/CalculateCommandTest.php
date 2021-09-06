@@ -39,7 +39,7 @@ class CalculateCommandTest extends TestCase
     {
         $command = new CalculateCommand();
 
-        $expected = file_get_contents('tests/mocks/testCommandWithoutOptionCalculationConfig.txt');
+        $expected = file_get_contents($this->getMockScenery(1));
 
         $stringCommand = '343.90
             --typeInterest=Financial
@@ -61,7 +61,7 @@ class CalculateCommandTest extends TestCase
     {
         $command = new CalculateCommand();
 
-        $expected = file_get_contents('tests/mocks/testCommandWithOptionCalculationConfig.txt');
+        $expected = file_get_contents($this->getMockScenery(2));
 
         $stringCommand = '343.90
             --typeInterest=Financial
@@ -84,93 +84,132 @@ class CalculateCommandTest extends TestCase
         $this->assertEquals($expected, $output->fetch());
     }
 
-    /*public function testExpectedExceptionWhenCommandFirstArgumentIsEmpty()
+    public function testCommandWithLimitValueInstallments()
     {
         $command = new CalculateCommand();
 
-        $input = new StringInput('');
+        $expected = file_get_contents($this->getMockScenery(3));
+
+        $stringCommand = '39.90
+            --typeInterest=Financial
+            --interestValue=2.99
+            --limitValueInstallment=6.00
+            --monetaryFormatterConfig
+            --currencyIsoCodes=usd
+            --locale=en_us
+            --monetaryFormatter=IntlDecimal';
+
+        $input = new StringInput($stringCommand);
 
         $input->bind($command->getDefinition());
 
-        $output = new TestOutput();
+        $output = new BufferedOutput();
 
-        $this->expectException(Exception::class);
+        $this->execute->invoke($this->calculate, $input, $output);
 
-        $this->execute->invoke($command, $input, $output);
-    }*/
+        $this->assertEquals($expected, $output->fetch());
+    }
 
-    /*public function testExpectedExceptionWhenCommandFirstArgumentIsInvalid()
+    public function testCommandWithNumberMaxInstallments()
     {
         $command = new CalculateCommand();
 
-        $input = new StringInput('XYZ');
+        $expected = file_get_contents($this->getMockScenery(4));
+
+        $stringCommand = '120.35
+            --typeInterest=Financial
+            --interestValue=1.79
+            --numberMaxInstallments=5
+            --monetaryFormatterConfig
+            --currencyIsoCodes=usd
+            --locale=en_us
+            --monetaryFormatter=IntlDecimal';
+
+        $input = new StringInput($stringCommand);
 
         $input->bind($command->getDefinition());
 
-        $output = new TestOutput();
+        $output = new BufferedOutput();
 
-        $this->expectException(Exception::class);
+        $this->execute->invoke($this->calculate, $input, $output);
 
-        $this->execute->invoke($command, $input, $output);
-    }*/
+        $this->assertEquals($expected, $output->fetch());
+    }
 
-    /*public function testCommandFirstArgumentIsFinancial()
+    public function testCommandWithObjectInstallmentFormatter()
     {
         $command = new CalculateCommand();
 
-        $input = new StringInput('Financial');
+        $expected = file_get_contents($this->getMockScenery(5));
+
+        $stringCommand = '786.44
+            --typeInterest=Financial
+            --interestValue=2.75
+            --monetaryFormatterConfig
+            --currencyIsoCodes=usd
+            --locale=en_us
+            --monetaryFormatter=IntlCurrency
+            --installmentFormatter';
+
+        $input = new StringInput($stringCommand);
 
         $input->bind($command->getDefinition());
 
-        $output = new TestOutput();
+        $output = new BufferedOutput();
 
-        $this->execute->invoke($command, $input, $output);
-        $this->assertCount(1, $output->messages);
-        $this->assertEquals(0, $output->messages[0]);
-    }*/
+        $this->execute->invoke($this->calculate, $input, $output);
 
-    /*public function testCommandSecondArgumentCompleted()
+        $this->assertEquals($expected, $output->fetch());
+    }
+
+    public function testCommandWithObjectInstallmentFormatterAndPatternFormatted()
     {
         $command = new CalculateCommand();
 
-        $input = new StringInput('Financial 2.99');
+        $expected = file_get_contents($this->getMockScenery(6));
+
+        $stringCommand = '689.65
+            --typeInterest=Financial
+            --interestValue=2.99
+            --monetaryFormatterConfig
+            --currencyIsoCodes=usd
+            --locale=en_us
+            --monetaryFormatter=IntlCurrency
+            --installmentFormatter
+            --pattern=pattern_b';
+
+        $input = new StringInput($stringCommand);
 
         $input->bind($command->getDefinition());
 
-        $output = new TestOutput();
+        $output = new BufferedOutput();
 
-        $this->execute->invoke($command, $input, $output);
-        $this->assertCount(1, $output->messages);
-        $this->assertEquals(0, $output->messages[0]);
-    }*/
+        $this->execute->invoke($this->calculate, $input, $output);
 
-    /*public function testCommandThirdArgumentCompleted()
+        $this->assertEquals($expected, $output->fetch());
+    }
+
+    /**
+     * @param $scenery
+     * @return string|void
+     */
+    public function getMockScenery($scenery)
     {
-        $command = new CalculateCommand();
+        switch ($scenery) {
+            case 1:
+                return 'tests/mocks/testCommandWithoutOptionCalculationConfig.txt';
+            case 2:
+                return 'tests/mocks/testCommandWithOptionCalculationConfig.txt';
+            case 3:
+                return 'tests/mocks/testCommandWithLimitValueInstallments.txt';
+            case 4:
+                return 'tests/mocks/testCommandWithNumberMaxInstallments.txt';
+            case 5:
+                return 'tests/mocks/testCommandWithObjectInstallmentFormatter.txt';
+            case 6:
+                return 'tests/mocks/testCommandWithObjectInstallmentFormatterAndPatternFormatted.txt';
+        }
+    }
 
-        $input = new StringInput('Financial 2.99 350.90');
 
-        $input->bind($command->getDefinition());
-
-        $output = new TestOutput();
-
-        $this->execute->invoke($command, $input, $output);
-        $this->assertCount(1, $output->messages);
-        $this->assertEquals(350.9, $output->messages[0]);
-    }*/
-
-    /*public function testCommandFourteenArgumentCompleted()
-    {
-        $command = new CalculateCommand();
-
-        $input = new StringInput('Financial 2.99 350.90 2');
-
-        $input->bind($command->getDefinition());
-
-        $output = new TestOutput();
-
-        $this->execute->invoke($command, $input, $output);
-        $this->assertCount(1, $output->messages);
-        $this->assertEquals(366.71513681364, $output->messages[0]);
-    }*/
 }
