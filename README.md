@@ -24,6 +24,22 @@ Instale este pacote como uma dependência usando [Composer](https://getcomposer.
 composer require ricardokovalski/installments-console
 ```
 
+<h1>Exemplos</h1>
+
+Se instalado em sua aplicação, você pode executar o aplicativo de console a partir da linha de comando:
+
+```bash
+$ ./vendor/bin/installments
+```
+
+Se instalado globalmente usando o Composer, certifique-se de que a instalação global do Composer esteja em seu PATH(geralmente é em algum lugar ~/.composer/vendor/bin). Então, você pode executá-lo:
+
+```bash
+$ installments
+```
+
+Esteja ciente de que alguns sistemas podem já ter um aplicativo de linha de comando chamado interest instalado, portanto, isso pode criar um conflito se algo usando seu PATH esperar a outra interest ferramenta.
+
 ## Copyright and License
 
 The ricardokovalski/installments-console library is copyright © [Ricardo Kovalski](https://github.com/ricardokovalski)
