@@ -2,11 +2,9 @@
 
 namespace RicardoKovalski\Installments\Console\Tests\Command;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
 use RicardoKovalski\Installments\Console\Application;
 use RicardoKovalski\Installments\Console\Command\CalculateCommand;
-use RicardoKovalski\Installments\Console\Tests\Util\TestOutput;
 use RicardoKovalski\Installments\Console\Util\BufferedOutput;
 use Symfony\Component\Console\Input\StringInput;
 

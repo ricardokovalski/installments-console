@@ -4,7 +4,7 @@ namespace RicardoKovalski\Installments\Console\Util;
 
 use Symfony\Component\Console\Output\Output;
 
-class BufferedOutput extends Output
+final class BufferedOutput extends Output
 {
     /**
      * @var string

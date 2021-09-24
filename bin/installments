@@ -28,5 +28,5 @@ use RicardoKovalski\Installments\Console\Application;
 use RicardoKovalski\Installments\Console\Command;
 
 $app = new Application();
-//$app->add(new Command\CalculateCommand());
+$app->add(new Command\CalculateCommand());
 $app->run();

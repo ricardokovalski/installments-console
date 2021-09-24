@@ -7,7 +7,7 @@ use RicardoKovalski\InstallmentsCalculator\Installment;
 use RicardoKovalski\InstallmentsCalculator\InstallmentFormatter;
 use Symfony\Component\Console\Helper\Table;
 
-class InstallmentsOutput
+final class InstallmentsOutput
 {
     private $monetaryFormatter;
 
